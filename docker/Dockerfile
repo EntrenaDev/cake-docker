@@ -40,9 +40,6 @@ COPY ./docker/apache/site.conf /etc/apache2/sites-available/000-default.conf
 # Copy the code into /var/www/html/ inside the image
 COPY . .
 
-# Set default working directory
-WORKDIR /var/www/html/app
-
 # Create tmp directory and make it writable by the web server
 # RUN mkdir -p \
 #   tmp/cache/models \
@@ -55,5 +52,18 @@ WORKDIR /var/www/html/app
 # Enable Apache modules and restart
 RUN a2enmod rewrite \
     && service apache2 restart
+
+# Crear usuario del contenedor
+RUN groupadd -g 1000 entrenadev && useradd -m -s /bin/bash -u 1000 -g entrenadev entrenadev
+
+# Cambia el propietario y los permisos de /var/www
+RUN chown -R entrenadev:entrenadev /var/www
+# && chmod -R u+rw /var/www
+
+# Usuario nuevo se usa
+USER entrenadev
+
+# Set default working directory
+WORKDIR /var/www/html/app
 
 EXPOSE 80
