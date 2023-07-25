@@ -41,28 +41,41 @@ COPY ./docker/apache/site.conf /etc/apache2/sites-available/000-default.conf
 # Copy the code into /var/www/html/ inside the image
 COPY . .
 
-# Create tmp directory and make it writable by the web server
-# RUN mkdir -p \
-#   tmp/cache/models \
-#   tmp/cache/persistent \
-#   && chown -R :www-data \
-#   tmp \
-#   && chmod -R 770 \
-#   tmp
-
 # Enable Apache modules and restart
 RUN a2enmod rewrite \
     && service apache2 restart
 
 # Crear usuario del contenedor
-RUN groupadd -g 1000 entrenadev && useradd -m -s /bin/bash -u 1000 -g entrenadev entrenadev
+# RUN groupadd -g 1000 entrenadev && useradd -m -s /bin/bash -u 1000 -g entrenadev entrenadev
+
+
+
+# Set default working directory
+# WORKDIR /var/www/html/app
+
+RUN groupmod -g 1000 www-data \
+    && usermod -u 1000 www-data
 
 # Cambia el propietario y los permisos de /var/www
-RUN chown -R entrenadev:entrenadev /var/www
-# && chmod -R u+rw /var/www
+RUN chown -R www-data:www-data /var/www
+
+# Create tmp directory and make it writable by the web server
+RUN mkdir -p \
+    tmp/cache/models \
+    tmp/cache/persistent \
+    && chown -R www-data:www-data \
+    tmp \
+    && chmod -R 770 \
+    tmp
+
+# Set default working directory
+# WORKDIR /var/www/html
+
+# RUN chown -R www-data:www-data lib/Cake/Cache \
+#     && chmod -R 770 lib/Cake/Cache
 
 # Usuario nuevo se usa
-USER entrenadev
+USER www-data
 
 # Set default working directory
 WORKDIR /var/www/html/app
