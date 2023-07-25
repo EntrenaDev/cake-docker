@@ -11,6 +11,7 @@ RUN apt-get update -yqq \
     make \
     libmcrypt-dev \
     libzip-dev \
+    openssh-client \
     && rm -rf /var/lib/apt/lists
 
 # Install mcrypt
