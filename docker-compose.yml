@@ -8,6 +8,9 @@ services:
       dockerfile: docker/Dockerfile
     volumes:
       - .:/var/www/html
+      - $SSH_AUTH_SOCK:/ssh-agent
+    environment:
+      SSH_AUTH_SOCK: /ssh-agent
     # extra_hosts:
     #   - "host.docker.internal:host-gateway"
     ports:
